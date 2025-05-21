@@ -9,10 +9,10 @@ This AWS Glue job utility is designed to perform **S3 compaction** of plain Parq
 ## Features
 
 - Supports compaction of Parquet data for Glue Catalog tables.
-- Handles only partitioned datasets.
+- Handles partitioned and non-partitioned datasets.
 - Preserves schema and table metadata.
 - Optionally deletes original small files after successful compaction.
-- Customizable output file size (128/256 MB sized file).
+- Customizable output file size.
 - Can be scheduled or run on-demand.
 
 ---
@@ -42,30 +42,17 @@ The Glue job accepts the following job parameters:
 
 ---
 
-## How It Works
+## Estimation Guide for File Sizing
 
-1. Reads metadata from the Glue Catalog.
-2. Loads data from the underlying S3 Parquet files using Spark.
-3. (Optional) Filters data by partition predicate.
-4. Coalesces or repartitions data based on the target file size.
-5. Writes compacted Parquet files to the target path.
-6. (Optional) Deletes original S3 objects after successful write.
+To help choose an appropriate target file size (e.g., 128MB, 256MB), you can estimate how many records will fit into a compacted file:
 
----
+### 1. Download a Sample Data File
 
-## Running the Job
+Download a sample Parquet file from your existing S3 storage. Preferably select a larger file (in MBs) to ensure a more accurate record count.
 
-You can run the Glue job via the AWS Console, CLI, or as part of an automated pipeline.
+### 2. Extract Total Records from the Parquet Footer
 
-### Example CLI Command
+Use the following command to extract the total record count from the Parquet file's footer:
 
 ```bash
-aws glue start-job-run \
-  --job-name s3-compaction \
-  --arguments '{
-    "--database_name":"my_database",
-    "--table_name":"my_table",
-    "--partition_predicate":"year=2023",
-    "--delete_original_files":"true",
-    "--target_file_size_mb":"256"
-  }'
+parquet footer temp/data-file.c000.snappy.parquet | jq '[.blocks[].rowCount] | add'
