@@ -2,7 +2,7 @@
 
 ## Overview
 
-This AWS Glue job utility is designed to perform **S3 compaction** of plain Parquet files stored in Amazon S3 and managed via the **AWS Glue Data Catalog**. It merges small files from partitions of a Glue Catalog table into larger, optimized Parquet files to improve query performance and reduce costs.
+This AWS Glue job utility is designed to perform **In-Place S3 compaction** of plain Parquet files stored in Amazon S3 and managed via the **AWS Glue Data Catalog**. It merges small files from partitions of a Glue Catalog table into larger, optimized Parquet files to improve query performance and reduce costs.
 
 ---
 
